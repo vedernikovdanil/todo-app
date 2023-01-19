@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  client:
+    build: ./client
+    command: sh -c "npm start"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/src:/usr/src/app/src
+    depends_on:
+      - server
+    networks:
+      - todo-app-network
+
+  server:
+    build: ./server
+    command: sh -c "npm run dev"
+    volumes:
+      - ./server/src:/usr/src/app/src
+    environment:
+      - PORT=3000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=TodoDB
+    depends_on:
+      - postgres
+    networks:
+      - todo-app-network
+
+  postgres:
+    image: postgres:alpine
+    volumes:
+      - todo-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=TodoDB
+    networks:
+      - todo-app-network
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - client
+      - server
+    networks:
+      - todo-app-network
+
+volumes:
+  todo-db:
+
+networks:
+  todo-app-network:
+    driver: bridge
