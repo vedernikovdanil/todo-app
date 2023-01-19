@@ -126,12 +126,11 @@ const TodoForm = React.forwardRef<
           type="text"
           placeholder="Responsible"
           list="users-datalist"
-          disabled={!isCreator || !props.users.length}
-          title={!props.users.length ? "You have no subordinates" : ""}
+          disabled={!isCreator}
           {...register("responsible", validationConfig.responsible)}
         />
         <datalist id="users-datalist">
-          {props.users?.map((user, index) => (
+          {[...props.users, auth.user!]?.map((user, index) => (
             <option key={index} value={user.login}>
               {user.name} {user.lastName} {user.middleName}
             </option>

@@ -10,7 +10,6 @@ class TodoValidation extends Validation<ITodoRequest> {
       expiresAt: new Field("Expires", {
         required: true,
         validate: (v: string) =>
-          !!todo?.expiresAt ||
           new Date(v).valueOf() > Date.now() ||
           "End date must be greater than current",
       }),
@@ -31,6 +30,8 @@ class TodoValidation extends Validation<ITodoRequest> {
       this.fields.status!.setValue(todo.status);
       this.fields.creator!.setValue(todo.creator);
       this.fields.responsible!.setValue(todo.responsible);
+    } else {
+      this.fields.responsible!.setValue(user.login);
     }
   }
 }

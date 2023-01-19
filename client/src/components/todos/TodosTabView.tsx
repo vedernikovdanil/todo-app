@@ -27,10 +27,9 @@ function getGroupedTodos(todos: ITodoResponse[], group: TodosGroups) {
           if (expiry.getFullYear() >= today.getFullYear()) {
             const diff = expiry.valueOf() - today.valueOf();
             const diffDays = Math.ceil(diff / 1000 / 60 / 60 / 24);
-
-            if (diffDays === 0) {
+            if (diffDays === 1) {
               acc.get("today")?.push(todo);
-            } else if (diffDays > 0 && diffDays < 8) {
+            } else if (diffDays > 1 && diffDays < 8) {
               acc.get("week")?.push(todo);
             } else if (diffDays > 7) {
               acc.get("more")?.push(todo);

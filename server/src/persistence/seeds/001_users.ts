@@ -41,8 +41,6 @@ async function init() {
     login = User.logins[User.id++];
     supervisorId: string | null = null;
   }
-  const users = getInstances(User, 10);
-
   const admin = {
     id: crypto.randomUUID(),
     name: "danil",
@@ -59,6 +57,10 @@ async function init() {
     login: "user",
     supervisorId: admin.id,
   };
+  const users = getInstances(User, 10).map((user, _, array) => {
+    user.supervisorId = Math.random() > 0.5 ? admin.id : getRandom(array).id;
+    return user;
+  });
 
   /*----------URESRS-PASSWORDS----------*/
   const craetePasswords = async (count: number) => {
@@ -96,7 +98,10 @@ async function init() {
     priority = getRandom(Object.values(TodoPriorityEnum));
     status = getRandom(Object.values(TodoStatusEnum));
     creatorId = getRandom(users).id;
-    responsibleId = getRandom(users).id;
+    responsibleId = (function () {
+      const user = Math.random() > 0.5 ? admin : getRandom(users);
+      return users.find((u) => u.supervisorId === user.id)?.id || admin.id;
+    })();
   }
   const todos = getInstances(Todo, 100);
 

@@ -60,7 +60,9 @@ class TodoController extends Controller<ITodo, ITodoResponse> {
         if (!responsible) {
           throw HttpError.NotExist("User", login);
         }
-        if (req.user.id !== responsible?.supervisorId) {
+        const isCreator = req.user.id === responsible?.id;
+        const isResponsible = req.user.id === responsible?.supervisorId;
+        if (!isCreator && !isResponsible) {
           throw HttpError.Forbidden(
             `Responsible '${responsible.login}' is not subordinate`
           );

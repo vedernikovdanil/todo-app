@@ -9,6 +9,7 @@ function UserItem(user: IUserResponse) {
         <div>
           {user.name} {user.lastName} {user.middleName}
         </div>
+        <div>supervisor: {user.supervisor || "none"}</div>
       </Card.Body>
     </Card>
   );
