@@ -1,19 +1,23 @@
 import _ from "lodash";
 
-type ValidationConfig = Partial<{
+type ValidationOptions = {
   value: any;
+  validate: (v: any) => true | string;
+};
+
+type ValidationConstraints = {
   required: boolean;
   min: number;
   max: number;
   minLength: number;
   maxLength: number;
   pattern: RegExp;
-  validate: (v: any) => true | string;
-}>;
+};
 
-type Constraints = Omit<ValidationConfig, "value" | "validate">;
-type ValidationRules<T extends ValidationConfig> = {
-  [Key in keyof T]?: Key extends "value" | "validate"
+type ValidationRules = Partial<ValidationOptions & ValidationConstraints>;
+
+type ValidationConfig<T = ValidationConstraints> = {
+  [Key in keyof ValidationConstraints]?: Key extends keyof ValidationOptions
     ? T[Key]
     : {
         value: any;
@@ -25,10 +29,10 @@ export class Validation<T> {
   constructor(public fields: { [Key in keyof T]: Field }) {}
 
   config() {
-    return _.transform<
-      typeof this.fields,
-      Record<keyof T, ValidationRules<ValidationConfig>>
-    >(this.fields, (r, v, k) => (r[k] = v!.getValidationRules()));
+    return _.transform<typeof this.fields, Record<keyof T, ValidationConfig>>(
+      this.fields,
+      (r, v, k) => (r[k] = v!.getValidationRules())
+    );
   }
 
   static toDateString(date?: Date) {
@@ -42,7 +46,7 @@ export class Validation<T> {
 }
 
 export class Field {
-  constructor(public name: string, public config?: ValidationConfig) {}
+  constructor(public name: string, public config?: ValidationRules) {}
 
   setValue(value: any) {
     if (!this.config) {
@@ -51,7 +55,10 @@ export class Field {
     this.config.value = value;
   }
 
-  validationMessages: Record<keyof Constraints, (check: any) => string> = {
+  validationMessages: Record<
+    keyof ValidationConstraints,
+    (check: any) => string
+  > = {
     required: (check) => `${this.name} is required`,
     min: (check) => `${this.name} must be more then ${check}`,
     max: (check) => `${this.name} must be less then ${check}`,
@@ -61,8 +68,8 @@ export class Field {
   };
 
   private getValidationRule(
-    name: keyof ValidationConfig,
-    check: ValidationConfig[typeof name]
+    name: keyof ValidationRules,
+    check: ValidationRules[typeof name]
   ) {
     switch (name) {
       case "value":
@@ -76,11 +83,11 @@ export class Field {
     }
   }
 
-  getValidationRules<T extends ValidationConfig>() {
-    const validationRules: ValidationRules<T> = {};
+  getValidationRules<T extends ValidationConstraints>() {
+    const validationRules: ValidationConfig<T> = {};
     if (this.config) {
       Object.entries(this.config).forEach(([key, check]) => {
-        const _key = key as keyof ValidationConfig;
+        const _key = key as keyof ValidationConstraints;
         validationRules[_key] = this.getValidationRule(_key, check);
       });
     }

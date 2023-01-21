@@ -1,7 +1,5 @@
 import $axios from "../http";
-import ITodo from "../interfaces/ITodo";
-import ITodoRequest from "../interfaces/request/ITodoRequest";
-import ITodoResponse from "../interfaces/response/ITodoResponse";
+import ITodo, { ITodoRequest, ITodoResponse } from "../interfaces/ITodo";
 
 class TodoService {
   async fetchTodosToUser() {
@@ -9,7 +7,7 @@ class TodoService {
   }
 
   async fetchTodosByUser() {
-    return await $axios.get<ITodoResponse[]>("/my-todos");
+    return await $axios.get<ITodoResponse[]>("/todos/my");
   }
 
   async addTodo(todo: ITodoRequest) {

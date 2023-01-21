@@ -1,6 +1,5 @@
 import knex from "../persistence";
-import ITodoResponse from "../interfaces/response/ITodoResponse";
-import ITodo from "../interfaces/ITodo";
+import ITodo, { ITodoResponse } from "../interfaces/ITodo";
 import UserService from "./UserService";
 import Service from "../models/Service";
 

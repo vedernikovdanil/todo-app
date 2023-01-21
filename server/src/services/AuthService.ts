@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs";
 import TokenService from "./TokenService";
 import HttpError from "../models/HttpError";
 import UserService from "./UserService";
-import IUserRequest from "../interfaces/request/IUserRequest";
-import IUser from "../interfaces/IUser";
+import IUser, { IUserRequest } from "../interfaces/IUser";
 import IAuthUser from "../interfaces/IAuthUser";
 
 class AuthService {

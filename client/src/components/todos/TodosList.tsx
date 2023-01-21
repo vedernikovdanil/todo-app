@@ -1,4 +1,4 @@
-import ITodoResponse from "../../interfaces/response/ITodoResponse";
+import { ITodoResponse } from "../../interfaces/ITodo";
 import TodoItem from "./TodoItem";
 
 function TodosList(props: {

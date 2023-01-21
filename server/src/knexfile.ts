@@ -1,4 +1,4 @@
-import * as CFG from "./configuration";
+import * as CFG from "./configs/db.config";
 
 // Update with your config settings.
 

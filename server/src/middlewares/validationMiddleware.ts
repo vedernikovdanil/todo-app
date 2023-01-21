@@ -1,8 +1,8 @@
 import { validationResult } from "express-validator";
-import { ControllerRoute } from "../models/Controller";
+import { Middleware } from "../models/Controller";
 import HttpError from "../models/HttpError";
 
-const validationMiddleware: ControllerRoute = async (req, res, next) => {
+const validationMiddleware: Middleware = async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(HttpError.NotValidated(errors.array()));

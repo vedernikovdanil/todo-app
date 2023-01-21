@@ -8,8 +8,9 @@ import {
 } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import FormError from "../../components/FormError";
-import LoginValidation from "../../models/validation/LoginValidation";
-import ILoginRequest from "../../interfaces/request/ILoginRequest";
+import LoginValidation, {
+  ILoginRequest,
+} from "../../models/validation/LoginValidation";
 
 const validationConfig = new LoginValidation().config();
 

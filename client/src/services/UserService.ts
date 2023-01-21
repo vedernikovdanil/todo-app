@@ -1,6 +1,5 @@
 import $axios from "../http";
-import IUser from "../interfaces/IUser";
-import IUserResponse from "../interfaces/response/IUserResponse";
+import IUser, { IUserResponse } from "../interfaces/IUser";
 
 class UserService {
   async fetchUsers() {

@@ -1,5 +1,5 @@
 import { Card } from "react-bootstrap";
-import IUserResponse from "../../interfaces/response/IUserResponse";
+import { IUserResponse } from "../../interfaces/IUser";
 
 function UserItem(user: IUserResponse) {
   return (

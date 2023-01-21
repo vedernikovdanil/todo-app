@@ -1,8 +1,6 @@
 import _ from "lodash";
-import IUserResponse from "../interfaces/response/IUserResponse";
-import IUserRequest from "../interfaces/request/IUserRequest";
 import knex from "../persistence";
-import IUser from "../interfaces/IUser";
+import IUser, { IUserRequest, IUserResponse } from "../interfaces/IUser";
 import Service from "../models/Service";
 import IAuthUser from "../interfaces/IAuthUser";
 

@@ -9,11 +9,12 @@ import {
 } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import FormError from "../../components/FormError";
-import IRegisterRequest from "../../interfaces/request/IRegisterRequest";
 import AuthService from "../../services/AuthService";
 import UserService from "../../services/UserService";
-import IUserResponse from "../../interfaces/response/IUserResponse";
-import RegisterValidation from "../../models/validation/RegisterValidation";
+import RegisterValidation, {
+  IRegisterRequest,
+} from "../../models/validation/RegisterValidation";
+import { IUserResponse } from "../../interfaces/IUser";
 
 const validationConfig = new RegisterValidation().config();
 

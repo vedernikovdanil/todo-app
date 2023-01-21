@@ -1,9 +1,9 @@
 import { InputGroup, Form, Button } from "react-bootstrap";
-import { TodosGroups } from "./TodosTabView";
+import { TodosGroupsType } from "./TodosGroups";
 
 function TodosSettings(props: {
-  group: TodosGroups;
-  setGroup: (value: TodosGroups) => void;
+  group: TodosGroupsType;
+  setGroup: (value: TodosGroupsType) => void;
   showModalAddTodo: () => void;
   className?: string;
 }) {
@@ -13,7 +13,7 @@ function TodosSettings(props: {
         <InputGroup.Text>Group by</InputGroup.Text>
         <Form.Select
           value={props.group}
-          onChange={(e) => props.setGroup(e.target.value as TodosGroups)}
+          onChange={(e) => props.setGroup(e.target.value as TodosGroupsType)}
         >
           <option value="updatedAt">No grouping</option>
           <option value="expiresAt">Expiry Date</option>

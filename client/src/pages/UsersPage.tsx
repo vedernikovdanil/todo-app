@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
 import UserItem from "../components/users/UserItem";
-import IUserResponse from "../interfaces/response/IUserResponse";
+import { IUserResponse } from "../interfaces/IUser";
 import UserService from "../services/UserService";
 
 export const loader: LoaderType = (store) => async (props) => {

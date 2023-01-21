@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { StoreContext } from "../..";
-import ITodoResponse from "../../interfaces/response/ITodoResponse";
+import { ITodoResponse } from "../../interfaces/ITodo";
 
 function TodoItem(todo: ITodoResponse) {
   const { auth } = React.useContext(StoreContext);

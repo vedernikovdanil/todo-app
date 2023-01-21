@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
 import IUser from "../interfaces/IUser";
+import { Middleware } from "../models/Controller";
 import HttpError from "../models/HttpError";
 import TokenService from "../services/TokenService";
 
-function authMiddleware(req: Request, res: Response, next: NextFunction) {
+const authMiddleware: Middleware = async function (req, res, next) {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
@@ -22,6 +22,6 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
   } catch (e) {
     next(e);
   }
-}
+};
 
 export default authMiddleware;

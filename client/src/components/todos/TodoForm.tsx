@@ -2,15 +2,15 @@ import React from "react";
 import { FloatingLabel, Form } from "react-bootstrap";
 import { Form as FormRouter, useSubmit } from "react-router-dom";
 import { useForm, UseFormHandleSubmit } from "react-hook-form";
-import ITodoRequest from "../../interfaces/request/ITodoRequest";
 import FormError from "../FormError";
+import { StoreContext } from "../..";
+import TodoValidation from "../../models/validation/TodoValidation";
 import {
+  ITodoRequest,
   TodoPriorityEnum,
   TodoStatusEnum,
-} from "../../interfaces/enums/TodoEnums";
-import { StoreContext } from "../..";
-import IUserResponse from "../../interfaces/response/IUserResponse";
-import TodoValidation from "../../models/validation/TodoValidation";
+} from "../../interfaces/ITodo";
+import { IUserResponse } from "../../interfaces/IUser";
 
 export type TodoFormHandle = {
   handleSubmit: UseFormHandleSubmit<ITodoRequest>;

@@ -1,7 +1,13 @@
 import $axios from "../http";
-import ILoginRequest from "../interfaces/request/ILoginRequest";
-import IRegisterRequest from "../interfaces/request/IRegisterRequest";
-import IAuthResponse from "../interfaces/response/IAuthResponse";
+import { IUserResponse } from "../interfaces/IUser";
+import { ILoginRequest } from "../models/validation/LoginValidation";
+import { IRegisterRequest } from "../models/validation/RegisterValidation";
+
+export interface IAuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: IUserResponse;
+}
 
 class AuthService {
   async login(user: ILoginRequest) {

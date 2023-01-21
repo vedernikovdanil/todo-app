@@ -4,10 +4,9 @@ import { useLoaderData } from "react-router-dom";
 import { StoreContext, StoreContextType } from "..";
 import ModalComponent from "../components/ModalComponent";
 import TodoForm, { TodoFormHandle } from "../components/todos/TodoForm";
+import TodosGroups, { TodosGroupsType } from "../components/todos/TodosGroups";
 import TodosSettings from "../components/todos/TodosSortPanel";
-import TodosTabView, { TodosGroups } from "../components/todos/TodosTabView";
-import ITodoRequest from "../interfaces/request/ITodoRequest";
-import ITodoResponse from "../interfaces/response/ITodoResponse";
+import { ITodoRequest, ITodoResponse } from "../interfaces/ITodo";
 import TodoService from "../services/TodoService";
 import UserService from "../services/UserService";
 
@@ -45,7 +44,7 @@ function TodosPage() {
   const { modal } = React.useContext(StoreContext);
   const { todosByUser, todosForUser, users } =
     useLoaderData() as LoaderReturnType<typeof loader>;
-  const [group, setGroup] = React.useState<TodosGroups>("expiresAt");
+  const [group, setGroup] = React.useState<TodosGroupsType>("expiresAt");
   const [editTodo, setEditTodo] = React.useState<ITodoResponse>();
   const formRef = React.useRef<TodoFormHandle>(null);
   const modalId = React.useRef("add-edit-modal");
@@ -85,14 +84,14 @@ function TodosPage() {
       />
       <Tabs justify defaultActiveKey="forMe" className="mb-3">
         <Tab eventKey="forMe" title="Assigned to me">
-          <TodosTabView
+          <TodosGroups
             todos={todosForUser}
             group={group}
             onClick={showModalEditTodo}
           />
         </Tab>
         <Tab eventKey="byMe" title="Created by me">
-          <TodosTabView
+          <TodosGroups
             todos={todosByUser}
             group={group}
             onClick={showModalEditTodo}

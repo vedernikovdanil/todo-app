@@ -1,19 +1,19 @@
+import _ from "lodash";
 import { Knex } from "knex";
 import Chance from "chance";
 import bcrypt from "bcryptjs";
 import {
   TodoPriorityEnum,
   TodoStatusEnum,
-} from "../../interfaces/enums/TodoEnum";
-import _ from "lodash";
-import ITodoRequest from "../../interfaces/request/ITodoRequest";
+  ITodoRequest,
+} from "../../interfaces/ITodo";
 
 const chance = new Chance();
 
 function toSQLDate(date: Date) {
   const now = new Date();
   date.setFullYear(now.getFullYear());
-  date.setMonth(Math.random() > 0.25 ? now.getMonth() : now.getMonth() + 1);
+  date.setMonth(now.getMonth());
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 const getRandom = <T>(array: T[]) => {
@@ -40,6 +40,25 @@ async function init() {
     middleName = chance.name({ middle: true }).split(" ").at(-1)!;
     login = User.logins[User.id++];
     supervisorId: string | null = null;
+
+    static getSupervisor(users: User[]) {
+      let hasSubordinate = false;
+      let user: User;
+      do {
+        user = getRandom(users);
+        hasSubordinate = !!users.find((u) => u.supervisorId === user.id);
+      } while (!hasSubordinate);
+      return user;
+    }
+    static getSubordinate(supervisorId: string, users: User[]) {
+      let hasSupervisor = false;
+      let user: User;
+      do {
+        user = getRandom(users);
+        hasSupervisor = user.supervisorId === supervisorId;
+      } while (!hasSupervisor);
+      return user;
+    }
   }
   const admin = {
     id: crypto.randomUUID(),
@@ -47,7 +66,7 @@ async function init() {
     lastName: "vedernikov",
     middleName: "dmitrievich",
     login: "admin",
-    supervisorId: null,
+    supervisorId: "",
   };
   const user = {
     id: crypto.randomUUID(),
@@ -61,6 +80,7 @@ async function init() {
     user.supervisorId = Math.random() > 0.5 ? admin.id : getRandom(array).id;
     return user;
   });
+  admin.supervisorId = getRandom(users).id;
 
   /*----------URESRS-PASSWORDS----------*/
   const craetePasswords = async (count: number) => {
@@ -97,11 +117,8 @@ async function init() {
     expiresAt = toSQLDate(chance.date());
     priority = getRandom(Object.values(TodoPriorityEnum));
     status = getRandom(Object.values(TodoStatusEnum));
-    creatorId = getRandom(users).id;
-    responsibleId = (function () {
-      const user = Math.random() > 0.5 ? admin : getRandom(users);
-      return users.find((u) => u.supervisorId === user.id)?.id || admin.id;
-    })();
+    creatorId = User.getSupervisor(users).id;
+    responsibleId = User.getSubordinate(this.creatorId, users).id;
   }
   const todos = getInstances(Todo, 100);
 

@@ -1,5 +1,5 @@
-import ITodoRequest from "../../interfaces/request/ITodoRequest";
-import IUserResponse from "../../interfaces/response/IUserResponse";
+import { ITodoRequest } from "../../interfaces/ITodo";
+import { IUserResponse } from "../../interfaces/IUser";
 import { Validation, Field } from "../Validation";
 
 class TodoValidation extends Validation<ITodoRequest> {
@@ -10,7 +10,7 @@ class TodoValidation extends Validation<ITodoRequest> {
       expiresAt: new Field("Expires", {
         required: true,
         validate: (v: string) =>
-          new Date(v).valueOf() > Date.now() ||
+          new Date(v).getDate() >= new Date().getDate() ||
           "End date must be greater than current",
       }),
       priority: new Field("Priority", { required: true }),
