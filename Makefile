@@ -1,5 +1,10 @@
 prod:
-	docker compose down --volume && docker compose up --build
+	docker compose down --volumes && \
+	docker compose up --build
 
 dev:
-	docker compose down --volume && docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+	docker compose down --volumes && \
+	docker compose \
+	-f docker-compose.yml \
+	-f docker-compose.dev.yml \
+	up --build
