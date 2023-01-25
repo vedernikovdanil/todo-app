@@ -2,22 +2,20 @@ version: "3.8"
 
 services:
   client:
-    build: ./client
-    command: sh -c "npm start"
-    ports:
-      - 3000:3000
-    volumes:
-      - ./client/src:/usr/src/app/src
+    build:
+      context: ./client
+      target: production
+    command: sh -c "serve -s build"
     depends_on:
       - server
     networks:
       - todo-app-network
 
   server:
-    build: ./server
-    command: sh -c "npm run dev"
-    volumes:
-      - ./server/src:/usr/src/app/src
+    build:
+      context: ./server
+      target: production
+    command: sh -c "npm run start"
     environment:
       - PORT=3000
       - POSTGRES_HOST=postgres

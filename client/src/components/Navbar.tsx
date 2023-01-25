@@ -29,7 +29,7 @@ function NavbarComponent(props: { className?: string }) {
           <div className="d-flex align-items-baseline ms-auto">
             {auth.isAuth ? (
               <>
-                <Nav.Link as="span" active>
+                <Nav.Link as="span" className="text-nowrap" active>
                   <i className="bi bi-person-circle me-1" />
                   {auth.user?.login}
                 </Nav.Link>

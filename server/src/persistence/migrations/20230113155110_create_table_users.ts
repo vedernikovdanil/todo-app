@@ -1,8 +1,5 @@
 import { Knex } from "knex";
-import {
-  TodoPriorityEnum,
-  TodoStatusEnum,
-} from "../../interfaces/enums/TodoEnum";
+import { TodoPriorityEnum, TodoStatusEnum } from "../../interfaces/ITodo";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema

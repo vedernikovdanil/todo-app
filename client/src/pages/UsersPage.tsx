@@ -1,12 +1,15 @@
 import { useLoaderData } from "react-router-dom";
+import { StoreContextType } from "..";
 import UserItem from "../components/users/UserItem";
 import { IUserResponse } from "../interfaces/IUser";
 import UserService from "../services/UserService";
 
-export const loader: LoaderType = (store) => async (props) => {
-  const response = await new UserService().fetchUsers();
-  return response?.status === 200 ? response.data : null;
-};
+export function loader({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    const response = await new UserService().fetchUsers();
+    return response?.status === 200 ? response.data : null;
+  };
+}
 
 function Users() {
   const users = useLoaderData() as IUserResponse[] | null;

@@ -48,13 +48,6 @@ export class Validation<T> {
 export class Field {
   constructor(public name: string, public config?: ValidationRules) {}
 
-  setValue(value: any) {
-    if (!this.config) {
-      this.config = {};
-    }
-    this.config.value = value;
-  }
-
   validationMessages: Record<
     keyof ValidationConstraints,
     (check: any) => string

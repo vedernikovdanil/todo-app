@@ -1,10 +1,10 @@
 import knex from "../persistence";
 import bcrypt from "bcryptjs";
 import TokenService from "./TokenService";
-import HttpError from "../models/HttpError";
+import HttpError from "../utils/HttpError";
 import UserService from "./UserService";
 import IUser, { IUserRequest } from "../interfaces/IUser";
-import IAuthUser from "../interfaces/IAuthUser";
+import IUserPassword from "../interfaces/IUserPassword";
 
 class AuthService {
   userService = new UserService();
@@ -12,15 +12,14 @@ class AuthService {
 
   async register(user: IUserRequest) {
     user.login = user.login.trim();
-    const existed = await this.userService.searchItem({ login: user.login });
+    const existed = await this.userService.search({ login: user.login });
     if (existed) {
       throw HttpError.BadRequest(`User ${user.login} already has registered`);
     }
     let supervisorId = null;
     if (user.supervisor) {
-      const supervisor = await this.userService.searchItem({
-        login: user.supervisor,
-      });
+      const login = user.supervisor;
+      const supervisor = await this.userService.search({ login });
       if (!supervisor) {
         throw HttpError.NotExist("Supervisor", user.supervisor);
       }
@@ -29,12 +28,12 @@ class AuthService {
     delete user.supervisor;
     const password = await bcrypt.hash(user.password, 5);
     const userToAdd = { ...user, supervisorId, password };
-    const createdUser = await this.userService.add(userToAdd);
+    const createdUser = await this.userService.register(userToAdd);
     return await this.createAndSaveToken(createdUser);
   }
 
   async login({ login, password }: IUserRequest) {
-    const user = await this.userService.searchItem({ login });
+    const user = await this.userService.search({ login });
     const auth = user ? await this.getPassword(user.id) : null;
     const isCorrectPassword = auth
       ? await bcrypt.compare(password, auth.password)
@@ -69,7 +68,7 @@ class AuthService {
   }
 
   private async getPassword(id: string) {
-    const userAuth = await knex<IAuthUser>("users-passwords")
+    const userAuth = await knex<IUserPassword>("users-passwords")
       .where({ userId: id })
       .first();
     return userAuth;

@@ -1,104 +1,86 @@
 import _ from "lodash";
 import TodoService from "../services/TodoService";
-import { body, param } from "express-validator";
-import HttpError from "../models/HttpError";
-import UserService from "../services/UserService";
+import { body } from "express-validator";
+import HttpError from "../utils/HttpError";
 import validationMiddleware from "../middlewares/validationMiddleware";
 import { NextFunction, Request, Response } from "express";
-import Controller, { Middleware } from "../models/Controller";
+import ControllerOperations from "../utils/ControllerOperations";
 import ITodo, {
   TodoPriorityEnum,
   TodoStatusEnum,
   ITodoResponse,
 } from "../interfaces/ITodo";
-import DecorateAll from "../decorators/DecorateAll";
-import TryCatchMiddleware from "../decorators/TryCatchMiddleware";
+import DecorateAll from "../utils/decorators/DecorateAll";
+import TryCatchMiddleware from "../utils/decorators/TryCatchMiddleware";
 import authMiddleware from "../middlewares/authMiddleware";
+import responsibleMiddleware from "../middlewares/responsibleMiddleware";
 
 @DecorateAll(TryCatchMiddleware)
-class TodoController extends Controller<ITodo, ITodoResponse> {
-  service = new TodoService();
-  userService = new UserService();
-
+class TodoController extends ControllerOperations<ITodo, ITodoResponse> {
   constructor() {
-    super("todos", authMiddleware);
-    const routes = this.getRoutes();
-    routes.get(`post/${this.route}`)!.unshift(this.addMiddlewares);
-    routes.get(`patch/${this.route}/:id`)!.unshift(this.editMiddlewares);
-    this.router.get(`/${this.route}/my`, this.getAllOfUser.bind(this));
-    this.initRoutes(routes);
+    super(new TodoService());
+    const router = this.router;
+    //USE
+    router.use("/todos", authMiddleware);
+    //GET
+    router.get("/todos", this.getAll.bind(this));
+    router.get("/todos/my", this.getAllOfUser.bind(this));
+    router.get("/todos/search", this.searchAll.bind(this));
+    router.get("/todos/pagination", this.pagination.bind(this));
+    router.get("/todos/:id", this.getById.bind(this));
+    //POST PATCH DELETE
+    router.post("/todos", this.createMiddlewares, this.create.bind(this));
+    router.patch("/todos/:id", this.editMiddlewares, this.edit.bind(this));
+    router.delete("/todos/:id", this.remove.bind(this));
   }
 
-  addMiddlewares: Middleware[] = [
-    this.responsibleMiddleware.bind(this),
-    this.creatorMiddleware.bind(this),
+  private static validationMiddlewares = [
     body("title").notEmpty(),
     body("status").isIn(Object.values(TodoStatusEnum)),
     body("priority").isIn(Object.values(TodoPriorityEnum)),
-    body(["createdAt", "expiresAt", "updatedAt"]).isDate().optional(),
+    body("expiresAt").isDate(),
     body(["creatorId", "responsibleId"]).notEmpty(),
+  ];
+
+  private createMiddlewares: Middleware[] = [
+    responsibleMiddleware,
+    this.creatorMiddleware.bind(this),
+    ...TodoController.validationMiddlewares,
     validationMiddleware,
   ];
 
-  editMiddlewares: Middleware[] = [
-    this.responsibleMiddleware.bind(this),
-    body("status").isIn(Object.values(TodoStatusEnum)).optional(),
-    body("priority").isIn(Object.values(TodoPriorityEnum)).optional(),
-    body(["createdAt", "expiresAt", "updatedAt"]).isDate().optional(),
+  private editMiddlewares: Middleware[] = [
+    responsibleMiddleware,
+    ...TodoController.validationMiddlewares.map((body) => body.optional()),
     validationMiddleware,
   ];
-
-  private async responsibleMiddleware(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    if (req.body.responsible) {
-      const login = req.body.responsible;
-      const responsible = await this.userService.searchItem({ login });
-      if (!responsible) {
-        throw HttpError.NotExist("User", login);
-      }
-      const isCreator = req.user.id === responsible?.id;
-      const isResponsible = req.user.id === responsible?.supervisorId;
-      if (!isCreator && !isResponsible) {
-        throw HttpError.Forbidden(`'${responsible.login}' not subordinate`);
-      }
-      req.body.responsibleId = responsible.id;
-    }
-    delete req.body.responsible;
-    next();
-  }
 
   private creatorMiddleware(req: Request, res: Response, next: NextFunction) {
     req.body.creatorId = req.user.id;
     next();
   }
 
-  override async getAll(req: Request, res: Response, next: NextFunction) {
-    const responsibleId = req.user.id;
-    const todos = await this.service.searchAll({ responsibleId });
-    res.send(todos);
-  }
-
   async getAllOfUser(req: Request, res: Response, next: NextFunction) {
-    if (!req?.user) {
-      throw HttpError.Unauthorized();
-    }
     const creatorId = req.user.id;
-    const todos = await this.service.searchAll({ creatorId });
+    const todos = await this.api.searchAll({ creatorId });
     res.send(todos);
   }
 
-  override async editById(req: Request, res: Response, next: NextFunction) {
-    const todo = await this.service.getById(+req.params.id);
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    const responsibleId = req.user.id;
+    const todos = await this.api.searchAll({ responsibleId });
+    res.send(todos);
+  }
+
+  async edit(req: Request, res: Response, next: NextFunction) {
+    const todo = await this.api.getById(+req.params.id);
     const isCreator = req.user.id === todo?.creatorId;
     const onlyStatus = _.isEqual(Object.keys(req.body), ["status"]);
     if (!isCreator && !onlyStatus) {
       throw HttpError.Forbidden("You can edit only status");
     }
-    this.service.edit(req.params.id, req.body);
-    super.editById(req, res, next);
+    const edittedTodo = await this.api.edit(+req.params.id, req.body);
+    res.send(edittedTodo);
   }
 }
 

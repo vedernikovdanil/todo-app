@@ -1,61 +1,30 @@
-import _ from "lodash";
 import React from "react";
 import TodosList from "../TodosList";
 import { ITodoResponse } from "../../../interfaces/ITodo";
-import TodosByExpire, { groupTodosByExpire } from "./TodosByExpire";
+import TodosByExpire from "./TodosByExpire";
+import TodosByResponsible from "./TodosByResponsible";
 
 export type TodosGroupsType = "createdAt" | "expiresAt" | "responsible";
-export type TodosGroupsByExpire = "today" | "week" | "more";
-export type TodosGroupDictionary<T extends TodosGroupsType> =
-  T extends "expiresAt"
-    ? Map<TodosGroupsByExpire, ITodoResponse[]>
-    : T extends "responsible"
-    ? [string, ITodoResponse[]][]
-    : ITodoResponse[];
-
-function getTodosGroup(todos: ITodoResponse[], group: TodosGroupsType) {
-  const todosSortedByUpdated = todos.sort(
-    (a, b) => new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf()
-  );
-  switch (group) {
-    case "expiresAt":
-      return groupTodosByExpire(todosSortedByUpdated);
-    case "responsible":
-      return _.entries(_.groupBy(todosSortedByUpdated, "responsible"));
-    default:
-      return todosSortedByUpdated;
-  }
-}
 
 function TodosGroups(props: {
   todos: ITodoResponse[];
   group: TodosGroupsType;
   onClick?: (todo: ITodoResponse) => void;
 }) {
-  const { todos, group, onClick } = props;
-  const todosGroup = React.useMemo(() => getTodosGroup(todos, group), [props]);
+  const sortedTodos = React.useMemo(() => {
+    return props.todos.sort(
+      (a, b) =>
+        new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf()
+    );
+  }, [props]);
 
-  switch (group) {
+  switch (props.group) {
     case "expiresAt":
-      const todosExpire = todosGroup as TodosGroupDictionary<typeof group>;
-      return <TodosByExpire todosGroup={todosExpire} onClick={onClick} />;
+      return <TodosByExpire todos={sortedTodos} onClick={props.onClick} />;
     case "responsible":
-      const todosResponsible = todosGroup as TodosGroupDictionary<typeof group>;
-      return (
-        <>
-          {todosResponsible.map(([responsible, todos], index) => (
-            <div key={`${responsible}-${index}`}>
-              <h2 className="mb-3">{responsible}</h2>
-              <TodosList todos={todos} onClick={onClick} />
-              <hr />
-            </div>
-          ))}
-        </>
-      );
+      return <TodosByResponsible todos={sortedTodos} onClick={props.onClick} />;
     default:
-      return (
-        <TodosList todos={todosGroup as ITodoResponse[]} onClick={onClick} />
-      );
+      return <TodosList todos={sortedTodos} onClick={props.onClick} />;
   }
 }
 

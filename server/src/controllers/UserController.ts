@@ -1,12 +1,20 @@
-import IUser, { IUserResponse } from "../interfaces/IUser";
-import Controller from "../models/Controller";
+import IUser, { IUserResponse } from "./../interfaces/IUser";
+import ControllerOperations from "../utils/ControllerOperations";
 import UserService from "../services/UserService";
+import IController from "../interfaces/IController";
 
-class UserController extends Controller<IUser, IUserResponse> {
-  service = new UserService();
+class UserController
+  extends ControllerOperations<IUser, IUserResponse>
+  implements IController
+{
   constructor() {
-    super("users");
-    this.initRoutes();
+    super(new UserService());
+    const router = this.router;
+    //GET
+    router.get("/users", this.getAll.bind(this));
+    router.get("/users/search", this.searchAll.bind(this));
+    router.get("/users/pagination", this.pagination.bind(this));
+    router.get("/users/:id", this.getById.bind(this));
   }
 }
 

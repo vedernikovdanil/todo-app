@@ -1,5 +1,3 @@
-import { Middleware } from "../models/Controller";
-
 const TryCatchMiddleware: GMethodDecorator<Middleware> = function (
   target,
   propertyKey,

@@ -15,23 +15,28 @@ import RegisterValidation, {
   IRegisterRequest,
 } from "../../models/validation/RegisterValidation";
 import { IUserResponse } from "../../interfaces/IUser";
+import { StoreContextType } from "../..";
 
 const validationConfig = new RegisterValidation().config();
 
-export const loader: LoaderType = (store) => async (props) => {
-  if (store.auth.isAuth) {
-    return redirect("/");
-  }
-  const response = await new UserService().fetchUsers();
-  return response?.status === 200 ? response.data : null;
-};
+export function loader({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    if (auth.isAuth) {
+      return redirect("/");
+    }
+    const response = await new UserService().fetchUsers();
+    return response?.status === 200 ? response.data : null;
+  };
+}
 
-export const action: LoaderType = (store) => async (props) => {
-  const formData = await props.request.formData();
-  const data = Object.fromEntries(formData as any) as IRegisterRequest;
-  const response = await new AuthService().register(data);
-  return response?.status === 200 ? redirect("/login") : null;
-};
+export function action({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData as any) as IRegisterRequest;
+    const response = await new AuthService().register(data);
+    return response?.status === 200 ? redirect("/login") : null;
+  };
+}
 
 function Register() {
   const users = useLoaderData() as IUserResponse[] | null;

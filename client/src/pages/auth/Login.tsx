@@ -11,19 +11,24 @@ import FormError from "../../components/FormError";
 import LoginValidation, {
   ILoginRequest,
 } from "../../models/validation/LoginValidation";
+import { StoreContextType } from "../..";
 
 const validationConfig = new LoginValidation().config();
 
-export const loader: LoaderType = (store) => async (props) => {
-  return store.auth.isAuth ? redirect("/") : null;
-};
+export function loader({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    return auth.isAuth ? redirect("/") : null;
+  };
+}
 
-export const action: LoaderType = (store) => async (props) => {
-  const formData = await props.request.formData();
-  const request = Object.fromEntries(formData as any) as ILoginRequest;
-  await store.auth.login(request);
-  return store.auth.isAuth ? redirect("/todos") : null;
-};
+export function action({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    const formData = await request.formData();
+    const loginData = Object.fromEntries(formData as any) as ILoginRequest;
+    await auth.login(loginData);
+    return auth.isAuth ? redirect("/todos") : null;
+  };
+}
 
 function Login() {
   const {

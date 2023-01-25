@@ -1,8 +1,8 @@
 import knex from "./persistence";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { IController } from "./models/Controller";
 import errorMiddleware from "./middlewares/errorMiddleware";
+import IController from "./interfaces/IController";
 
 class App {
   public app: express.Application;

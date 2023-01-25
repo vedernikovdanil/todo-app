@@ -1,6 +1,5 @@
 import { validationResult } from "express-validator";
-import { Middleware } from "../models/Controller";
-import HttpError from "../models/HttpError";
+import HttpError from "../utils/HttpError";
 
 const validationMiddleware: Middleware = async function (req, res, next) {
   const errors = validationResult(req);

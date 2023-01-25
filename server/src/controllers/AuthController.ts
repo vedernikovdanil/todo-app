@@ -1,10 +1,10 @@
 import AuthService from "../services/AuthService";
 import { body } from "express-validator";
-import { IController } from "../models/Controller";
 import { NextFunction, Request, Response, Router } from "express";
 import validationMiddleware from "../middlewares/validationMiddleware";
-import DecorateAll from "../decorators/DecorateAll";
-import TryCatchMiddleware from "../decorators/TryCatchMiddleware";
+import DecorateAll from "../utils/decorators/DecorateAll";
+import TryCatchMiddleware from "../utils/decorators/TryCatchMiddleware";
+import IController from "../interfaces/IController";
 
 @DecorateAll(TryCatchMiddleware)
 class AuthController implements IController {
@@ -12,16 +12,17 @@ class AuthController implements IController {
   router = Router();
 
   constructor() {
-    this.router.post("/login", this.login.bind(this));
-    this.router.post(
+    const router = this.router;
+    router.post("/login", this.login.bind(this));
+    router.post(
       "/register",
       body(["name", "lastName", "middleName"]).isLength({ min: 2, max: 50 }),
       body(["login", "password"]).isLength({ min: 4, max: 50 }),
       validationMiddleware,
       this.register.bind(this)
     );
-    this.router.post("/logout", this.logout.bind(this));
-    this.router.post("/refresh", this.refresh.bind(this));
+    router.post("/logout", this.logout.bind(this));
+    router.post("/refresh", this.refresh.bind(this));
   }
 
   async register(req: Request, res: Response, next: NextFunction) {

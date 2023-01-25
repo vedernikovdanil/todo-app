@@ -13,21 +13,20 @@ import UserService from "../services/UserService";
 const todoServoce = new TodoService();
 const userService = new UserService();
 
-export const loader =
-  ({ auth }: StoreContextType) =>
-  async (props: LoaderParams) => {
+export function loader({ auth }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
     return {
       todosByUser: (await todoServoce.fetchTodosByUser())?.data,
       todosForUser: (await todoServoce.fetchTodosToUser())?.data,
       users: (await userService.getSubordinates(auth.user!.id))?.data,
-      url: new URL(props.request.url),
+      url: new URL(request.url),
     };
   };
+}
 
-export const action: LoaderType =
-  ({ modal }) =>
-  async (props) => {
-    const formData = await props.request.formData();
+export function action({ modal }: StoreContextType) {
+  return async function ({ params, request }: LoaderParams) {
+    const formData = await request.formData();
     const data = Object.fromEntries(formData as any) as ITodoRequest;
     const { id, ...dataToSend } = data;
     const response = id
@@ -39,6 +38,7 @@ export const action: LoaderType =
     }
     return null;
   };
+}
 
 function TodosPage() {
   const { modal } = React.useContext(StoreContext);

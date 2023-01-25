@@ -1,6 +1,5 @@
 import IUser from "../interfaces/IUser";
-import { Middleware } from "../models/Controller";
-import HttpError from "../models/HttpError";
+import HttpError from "../utils/HttpError";
 import TokenService from "../services/TokenService";
 
 const authMiddleware: Middleware = async function (req, res, next) {

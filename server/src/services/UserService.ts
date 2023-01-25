@@ -1,27 +1,32 @@
 import _ from "lodash";
 import knex from "../persistence";
 import IUser, { IUserRequest, IUserResponse } from "../interfaces/IUser";
-import Service from "../models/Service";
-import IAuthUser from "../interfaces/IAuthUser";
+import KnexOperations from "../utils/KnexOperations";
+import IUserPassword from "../interfaces/IUserPassword";
 
-class UserService extends Service<IUser, IUserResponse> {
-  query = () =>
-    knex("users as u")
-      .select<IUserResponse[]>("u.*", "u1.login as supervisor")
-      .leftJoin("users as u1", "u1.id", "u.supervisorId");
-  alias = "u";
+class UserService
+  extends KnexOperations<IUser, IUserResponse>
+  implements IServiceOperations<IUser, IUserResponse>
+{
+  constructor() {
+    const query = () =>
+      knex("users as u")
+        .select<IUserResponse[]>("u.*", "u1.login as supervisor")
+        .leftJoin("users as u1", "u1.id", "u.supervisorId");
+    super(query, "u");
+  }
 
-  override async add(item: IUserRequest): Promise<IUser> {
+  async register(item: IUserRequest) {
     return await knex.transaction(async (trx) => {
       const { password, supervisor, ...user } = { ...item };
       const [createdUser] = await trx<IUser>("users")
         .insert(user)
         .returning("*");
-      const authUser: IAuthUser = {
+      const authUser: IUserPassword = {
         userId: createdUser.id,
         password,
       };
-      await trx<IAuthUser>("users-passwords").insert(authUser);
+      await trx<IUserPassword>("users-passwords").insert(authUser);
       return createdUser;
     });
   }

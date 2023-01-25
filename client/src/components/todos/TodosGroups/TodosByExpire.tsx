@@ -1,40 +1,47 @@
-import { TodosGroupsByExpire, TodosGroupDictionary } from ".";
+import React from "react";
 import { ITodoResponse } from "../../../interfaces/ITodo";
 import TodosList from "../TodosList";
 
-export function groupTodosByExpire(todos: ITodoResponse[]) {
-  const todosSortedByExpires = todos.sort(
-    (a, b) => new Date(a.expiresAt).valueOf() - new Date(b.expiresAt).valueOf()
-  );
-  const today = new Date();
-  return todosSortedByExpires.reduce<TodosGroupDictionary<"expiresAt">>(
-    (acc, todo) => {
-      const expiry = new Date(todo.expiresAt);
-      if (expiry.getFullYear() >= today.getFullYear()) {
-        const diff = expiry.valueOf() - today.valueOf();
-        const diffDays = Math.ceil(diff / 1000 / 60 / 60 / 24);
-        if (diffDays === 1) {
-          acc.get("today")?.push(todo);
-        } else if (diffDays > 1 && diffDays < 9) {
-          acc.get("week")?.push(todo);
-        } else if (diffDays > 7) {
-          acc.get("more")?.push(todo);
-        }
-      }
-      return acc;
-    },
-    new Map([
-      ["today", []],
-      ["week", []],
-      ["more", []],
-    ])
-  );
-}
+type TodosGroupsByExpire = "today" | "week" | "more";
 
 function TodosByExpire(props: {
-  todosGroup: TodosGroupDictionary<"expiresAt">;
+  todos: ITodoResponse[];
   onClick?: (todo: ITodoResponse) => void;
 }) {
+  const todosByExpire = React.useMemo(() => {
+    const todosSortedByExpires = props.todos.sort(
+      (a, b) =>
+        new Date(a.expiresAt).valueOf() - new Date(b.expiresAt).valueOf()
+    );
+    const today = new Date();
+    return todosSortedByExpires.reduce<
+      Map<TodosGroupsByExpire, ITodoResponse[]>
+    >(
+      (acc, todo) => {
+        const expiry = new Date(todo.expiresAt);
+        if (expiry.getFullYear() >= today.getFullYear()) {
+          const diff = expiry.valueOf() - today.valueOf();
+          const diffDays = Math.floor(diff / 1000 / 60 / 60 / 24);
+          console.log(todo.title, diffDays, diff);
+
+          if (diffDays === 0) {
+            acc.get("today")?.push(todo);
+          } else if (diffDays >= 1 && diffDays <= 8) {
+            acc.get("week")?.push(todo);
+          } else if (diffDays > 8) {
+            acc.get("more")?.push(todo);
+          }
+        }
+        return acc;
+      },
+      new Map([
+        ["today", []],
+        ["week", []],
+        ["more", []],
+      ])
+    );
+  }, [props.todos]);
+
   const today = new Date();
   const tomorrow = new Date(today.valueOf() + 1000 * 60 * 60 * 24 * 1);
   const week = new Date(today.valueOf() + 1000 * 60 * 60 * 24 * 8);
@@ -70,10 +77,7 @@ function TodosByExpire(props: {
             </span>
             <hr />
           </h2>
-          <TodosList
-            todos={props.todosGroup.get(group)}
-            onClick={props.onClick}
-          />
+          <TodosList todos={todosByExpire.get(group)} onClick={props.onClick} />
         </div>
       ))}
     </>

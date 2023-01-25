@@ -3,7 +3,9 @@ import { StoreContextType } from ".";
 
 declare global {
   type LoaderParams = { params: Params; request: Request };
-  type LoaderType = (store: StoreContextType) => (props: LoaderParams) => any;
+  type LoaderType = (
+    store: StoreContextType
+  ) => ({ params, request }: LoaderParams) => any;
   type LoaderReturnType<T extends LoaderType> = Awaited<
     ReturnType<ReturnType<T>>
   >;

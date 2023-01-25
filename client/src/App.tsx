@@ -1,5 +1,5 @@
 import { Container } from "react-bootstrap";
-import { Outlet, Params } from "react-router-dom";
+import { Outlet, redirect } from "react-router-dom";
 import Breadcrumb from "./components/Breadcrumb";
 import Navbar from "./components/Navbar";
 import ScrollToTop from "./components/loaders/ScrollToTop";
@@ -9,9 +9,12 @@ import Authorization from "./components/loaders/Authorization";
 import { StoreContextType } from ".";
 
 export function loader({ auth }: StoreContextType) {
-  return async function (props: { params: Params; request: Request }) {
-    const url = new URL(props.request.url);
+  return async function ({ params, request }: LoaderParams) {
+    const url = new URL(request.url);
     const isAuthPath = ["/register", "/login"].includes(url.pathname);
+    if (!auth.isAuth && !isAuthPath) {
+      return redirect("/login");
+    }
     if (localStorage.getItem("token") && !isAuthPath) {
       await auth.checkAuth();
     }

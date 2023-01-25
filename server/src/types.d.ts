@@ -7,11 +7,18 @@ declare global {
       user: IUser;
     }
   }
+
   type GMethodDecorator<T extends Function> = (
     target: Function,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<T>
   ) => TypedPropertyDescriptor<T> | void;
+
+  type Middleware = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<void> | void;
 }
 
 export {};
