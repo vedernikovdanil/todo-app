@@ -1,8 +1,25 @@
 # BUILD
 
+## production
+
+```
+docker compose down --volume && \
+docker compose up --build
+```
+
+or
+
+`make prod`
+
 ## development
 
-`docker compose up --build`
+```
+docker compose down --volume && \
+docker compose \
+-f docker-compose.yml \
+-f docker-compose.dev.yml \
+up --build
+```
 
 or
 
