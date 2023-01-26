@@ -6,7 +6,7 @@ const TryCatchMiddleware: GMethodDecorator<Middleware> = function (
   const original = descriptor.value;
   descriptor.value = async function (req, res, next) {
     try {
-      await original?.call(this, req, res, next);
+      return await original?.call(this, req, res, next);
     } catch (e) {
       next(e);
     }

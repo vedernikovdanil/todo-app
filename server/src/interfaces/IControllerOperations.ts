@@ -1,3 +1,5 @@
+import IServiceOperations from "./IServiceOperations";
+
 type IControllerOperations<
   TSource extends { id: string | number },
   TResponse extends {}

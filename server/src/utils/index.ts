@@ -1,8 +1,7 @@
 export function toSQLDate(date: Date) {
-  const now = new Date();
-  date.setFullYear(now.getFullYear());
-  date.setMonth(now.getMonth());
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
 export function getRandom<T>(array: T[]) {

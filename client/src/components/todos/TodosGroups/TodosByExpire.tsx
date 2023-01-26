@@ -22,11 +22,11 @@ function TodosByExpire(props: {
         if (expiry.getFullYear() >= today.getFullYear()) {
           const diff = expiry.valueOf() - today.valueOf();
           const diffDays = Math.floor(diff / 1000 / 60 / 60 / 24);
-          console.log(todo.title, diffDays, diff);
+          console.log(todo.title, diffDays, diff / 1000 / 60 / 60 / 24, diff);
 
-          if (diffDays === 0) {
+          if (diffDays === -1) {
             acc.get("today")?.push(todo);
-          } else if (diffDays >= 1 && diffDays <= 8) {
+          } else if (diffDays >= 0 && diffDays <= 8) {
             acc.get("week")?.push(todo);
           } else if (diffDays > 8) {
             acc.get("more")?.push(todo);

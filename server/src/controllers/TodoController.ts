@@ -3,7 +3,7 @@ import TodoService from "../services/TodoService";
 import { body } from "express-validator";
 import HttpError from "../utils/HttpError";
 import validationMiddleware from "../middlewares/validationMiddleware";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import ControllerOperations from "../utils/ControllerOperations";
 import ITodo, {
   TodoPriorityEnum,
@@ -17,6 +17,8 @@ import responsibleMiddleware from "../middlewares/responsibleMiddleware";
 
 @DecorateAll(TryCatchMiddleware)
 class TodoController extends ControllerOperations<ITodo, ITodoResponse> {
+  router = Router();
+
   constructor() {
     super(new TodoService());
     const router = this.router;

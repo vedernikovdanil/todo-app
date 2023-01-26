@@ -1,5 +1,6 @@
 import { Knex } from "knex";
 import _ from "lodash";
+import IServiceOperations from "../interfaces/IServiceOperations";
 
 class KnexOperations<
   TSource extends { id: string | number },

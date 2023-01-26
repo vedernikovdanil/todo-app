@@ -2,11 +2,14 @@ import IUser, { IUserResponse } from "./../interfaces/IUser";
 import ControllerOperations from "../utils/ControllerOperations";
 import UserService from "../services/UserService";
 import IController from "../interfaces/IController";
+import { Router } from "express";
 
 class UserController
   extends ControllerOperations<IUser, IUserResponse>
   implements IController
 {
+  router = Router();
+
   constructor() {
     super(new UserService());
     const router = this.router;

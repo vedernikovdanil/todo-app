@@ -20,3 +20,5 @@ type PaginationOperation<TSource, TResponse> = (
   limit: number;
   count: number;
 }>;
+
+export default IServiceOperations;

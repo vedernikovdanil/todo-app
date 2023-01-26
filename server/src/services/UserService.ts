@@ -3,6 +3,7 @@ import knex from "../persistence";
 import IUser, { IUserRequest, IUserResponse } from "../interfaces/IUser";
 import KnexOperations from "../utils/KnexOperations";
 import IUserPassword from "../interfaces/IUserPassword";
+import IServiceOperations from "../interfaces/IServiceOperations";
 
 class UserService
   extends KnexOperations<IUser, IUserResponse>

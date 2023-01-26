@@ -1,18 +1,16 @@
-import { Request, Response, NextFunction, Router } from "express";
+import { Request, Response, NextFunction } from "express";
 import _ from "lodash";
 import DecorateAll from "./decorators/DecorateAll";
 import TryCatchMiddleware from "./decorators/TryCatchMiddleware";
-import IController from "../interfaces/IController";
 import IControllerOperations from "../interfaces/IControllerOperations";
+import IServiceOperations from "../interfaces/IServiceOperations";
 
 @DecorateAll(TryCatchMiddleware)
 class ControllerOperations<
   TSource extends { id: string | number },
   TResponse extends {}
-> implements IController, IControllerOperations<TSource, TResponse>
+> implements IControllerOperations<TSource, TResponse>
 {
-  public router = Router();
-
   constructor(protected api: IServiceOperations<TSource, TResponse>) {}
 
   async getAll(req: Request, res: Response, next: NextFunction) {

@@ -1,6 +1,7 @@
 import knex from "../persistence";
 import ITodo, { ITodoResponse } from "../interfaces/ITodo";
 import KnexOperations from "../utils/KnexOperations";
+import IServiceOperations from "../interfaces/IServiceOperations";
 
 class TodoService
   extends KnexOperations<ITodo, ITodoResponse>
