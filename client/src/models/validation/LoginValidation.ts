@@ -1,9 +1,5 @@
+import ILoginRequest from "../../interfaces/ILoginRequest";
 import { Validation, Field } from "../Validation";
-
-export interface ILoginRequest {
-  login: string;
-  password: string;
-}
 
 class LoginValidation extends Validation<ILoginRequest> {
   constructor() {

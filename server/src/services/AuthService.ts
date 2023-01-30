@@ -1,14 +1,16 @@
 import knex from "../persistence";
 import bcrypt from "bcryptjs";
-import TokenService from "./TokenService";
 import HttpError from "../utils/HttpError";
-import UserService from "./UserService";
 import IUser, { IUserRequest } from "../interfaces/IUser";
 import IUserPassword from "../interfaces/IUserPassword";
+import ITokenService from "./ITokenService";
+import IUserService from "./IUserService";
 
 class AuthService {
-  userService = new UserService();
-  tokenService = new TokenService();
+  constructor(
+    private userService: IUserService,
+    private tokenService: ITokenService
+  ) {}
 
   async register(user: IUserRequest) {
     user.login = user.login.trim();
@@ -34,11 +36,10 @@ class AuthService {
 
   async login({ login, password }: IUserRequest) {
     const user = await this.userService.search({ login });
-    const auth = user ? await this.getPassword(user.id) : null;
-    const isCorrectPassword = auth
-      ? await bcrypt.compare(password, auth.password)
-      : null;
-    if (!user || !auth || !isCorrectPassword) {
+    const auth = user && (await this.getPassword(user.id));
+    const isCorrectPassword =
+      auth && (await bcrypt.compare(password, auth?.password));
+    if (!isCorrectPassword) {
       throw HttpError.BadRequest("Incorrect login or password");
     }
     return await this.createAndSaveToken(user!);

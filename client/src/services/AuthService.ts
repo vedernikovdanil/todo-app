@@ -1,7 +1,7 @@
 import $axios from "../http";
+import ILoginRequest from "../interfaces/ILoginRequest";
+import IRegisterRequest from "../interfaces/IRegisterRequest";
 import { IUserResponse } from "../interfaces/IUser";
-import { ILoginRequest } from "../models/validation/LoginValidation";
-import { IRegisterRequest } from "../models/validation/RegisterValidation";
 
 export interface IAuthResponse {
   accessToken: string;

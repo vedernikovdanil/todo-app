@@ -1,7 +1,5 @@
-import { IUserRequest } from "../../interfaces/IUser";
+import IRegisterRequest from "../../interfaces/IRegisterRequest";
 import { Validation, Field } from "../Validation";
-
-export interface IRegisterRequest extends IUserRequest {}
 
 class RegisterValidation extends Validation<IRegisterRequest> {
   constructor() {

@@ -11,11 +11,10 @@ import { useForm } from "react-hook-form";
 import FormError from "../../components/FormError";
 import AuthService from "../../services/AuthService";
 import UserService from "../../services/UserService";
-import RegisterValidation, {
-  IRegisterRequest,
-} from "../../models/validation/RegisterValidation";
+import RegisterValidation from "../../models/validation/RegisterValidation";
 import { IUserResponse } from "../../interfaces/IUser";
 import { StoreContextType } from "../..";
+import IRegisterRequest from "../../interfaces/IRegisterRequest";
 
 const validationConfig = new RegisterValidation().config();
 
@@ -87,7 +86,7 @@ function Register() {
               type="search"
               placeholder="Supervisor"
               list="users-datalist"
-              {...register("supervisor")}
+              {...register("supervisor", validationConfig.supervisor)}
             />
             <datalist id="users-datalist">
               {users?.map((user, index) => (
@@ -97,7 +96,7 @@ function Register() {
               ))}
             </datalist>
           </FloatingLabel>
-          <FormError />
+          <FormError message={errors.supervisor?.message} />
         </Col>
         <Col>
           <h4 className="text-muted">Authorization data</h4>

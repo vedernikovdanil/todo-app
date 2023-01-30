@@ -1,11 +1,16 @@
 import App from "./App";
+import { PORT } from "./configs/app.config";
 import AuthController from "./controllers/AuthController";
 import UserController from "./controllers/UserController";
 import TodoController from "./controllers/TodoController";
-import { PORT } from "./configs/app.config";
+import AuthService from "./services/AuthService";
+import UserService from "./services/UserService";
+import TokenService from "./services/TokenService";
+
+const authService = new AuthService(new UserService(), new TokenService());
 
 const app = new App(
-  [new AuthController(), new UserController(), new TodoController()],
+  [new AuthController(authService), new UserController(), new TodoController()],
   PORT
 );
 

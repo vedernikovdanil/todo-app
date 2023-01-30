@@ -3,15 +3,21 @@ import dotenv from "dotenv";
 import knex from "../persistence";
 import IToken from "../interfaces/IToken";
 import IUser from "../interfaces/IUser";
+import ITokenService from "./ITokenService";
 
 dotenv.config();
 
 const ACCESS_KEY = process.env.JWT_ACCESS_SECRET!;
 const REFRESH_KEY = process.env.JWT_REFRESH_SECRET!;
 
-class TokenService {
+class TokenService implements ITokenService {
   async getAllTokens() {
     return await knex<IToken>("tokens");
+  }
+
+  async getToken(refreshToken: string) {
+    const token = await knex<IToken>("tokens").where({ refreshToken }).first();
+    return token;
   }
 
   generateToken(payload: any) {
@@ -31,7 +37,7 @@ class TokenService {
   }
 
   validateAccessToken(token: string) {
-    return this.validateToken(token, ACCESS_KEY);
+    return this.validateToken(token, ACCESS_KEY) as IUser;
   }
 
   validateRefreshToken(token: string) {
@@ -56,11 +62,6 @@ class TokenService {
       .where({ refreshToken })
       .delete()
       .returning("*");
-    return token;
-  }
-
-  async getToken(refreshToken: string) {
-    const token = await knex<IToken>("tokens").where({ refreshToken }).first();
     return token;
   }
 }

@@ -4,10 +4,11 @@ import IUser, { IUserRequest, IUserResponse } from "../interfaces/IUser";
 import KnexOperations from "../utils/KnexOperations";
 import IUserPassword from "../interfaces/IUserPassword";
 import IServiceOperations from "../interfaces/IServiceOperations";
+import IUserService from "./IUserService";
 
 class UserService
   extends KnexOperations<IUser, IUserResponse>
-  implements IServiceOperations<IUser, IUserResponse>
+  implements IUserService
 {
   constructor() {
     const query = () =>

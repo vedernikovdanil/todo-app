@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
+import ILoginRequest from "../interfaces/ILoginRequest";
 import { IUserResponse } from "../interfaces/IUser";
-import { ILoginRequest } from "../models/validation/LoginValidation";
 import AuthService from "../services/AuthService";
 
 const authService = new AuthService();

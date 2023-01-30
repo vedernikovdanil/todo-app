@@ -1,17 +1,16 @@
-import AuthService from "../services/AuthService";
 import { body } from "express-validator";
 import { NextFunction, Request, Response, Router } from "express";
 import validationMiddleware from "../middlewares/validationMiddleware";
 import DecorateAll from "../utils/decorators/DecorateAll";
 import TryCatchMiddleware from "../utils/decorators/TryCatchMiddleware";
 import IController from "../interfaces/IController";
+import IAuthService from "../services/IAuthService";
 
 @DecorateAll(TryCatchMiddleware)
 class AuthController implements IController {
-  authService = new AuthService();
   router = Router();
 
-  constructor() {
+  constructor(private authService: IAuthService) {
     const router = this.router;
     router.post("/login", this.login.bind(this));
     router.post(
